@@ -378,6 +378,9 @@ def parse_kea_pdf(content: bytes) -> pd.DataFrame:
                         if not line.startswith("College:") and not is_category_header:
                             pending["branch_parts"].append(line)
             flush()
+            # pdfplumber caches each page's layout and character objects.
+            # Release that cache before moving to the next page to keep RAM bounded.
+            page.close()
 
     if not records:
         raise ValueError(
